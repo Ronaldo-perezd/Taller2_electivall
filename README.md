@@ -1,6 +1,6 @@
 
-# Taller #1 - Electiva Web
-Práctica: Implementación del motor de plantillas EJS
+# Taller #2 - Electiva Web
+Práctica: Implementación de una API RESTFull como un servicio en la nube.
 
 # Para ejecutarlo:
 1) Ingrese desde el terminal del editor de texto los siguientes comandos:
@@ -9,6 +9,4 @@ Práctica: Implementación del motor de plantillas EJS
 4) Abra el navegador y escriba en una pestaña vacía: http://localhost:3000/
 
 ## Authors
-- Robinson Aguilar
-- Ronaldo Perez
-
+- Ronaldo Pérez Díaz
