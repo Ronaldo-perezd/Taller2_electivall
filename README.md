@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Taller #2 - Electiva Web
 Práctica: Implementación de una API RESTFull como un servicio en la nube.
@@ -10,3 +11,6 @@ Práctica: Implementación de una API RESTFull como un servicio en la nube.
 
 ## Authors
 - Ronaldo Pérez Díaz
+=======
+# Taller2_electivall
+>>>>>>> 29b5097bdc936dbf712657f9731f26d5d3e27b00
