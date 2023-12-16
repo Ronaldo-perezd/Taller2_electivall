@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Barber Shop App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Barber Shop App</h1>
+
+    <!-- Crear Cliente -->
+    <form id="clientForm">
+      <h2>Clientes</h2>
+      <label for="clientName">Nombre:</label>
+      <input type="text" id="clientName" required />
+      <label for="clientEmail">Email:</label>
+      <input type="email" id="clientEmail" required />
+      <label for="clientPhone">Teléfono:</label>
+      <input type="text" id="clientPhone" required />
+      <button type="button" onclick="createClient()">Crear Cliente</button>
+    </form>
+
+    <!-- Actualizar Cliente -->
+    <form id="updateClientForm">
+      <h2>Actualizar Cliente</h2>
+      <label for="updateClientId">ID del Cliente:</label>
+      <input type="text" id="updateClientId" required />
+      <label for="updateClientName">Nuevo Nombre:</label>
+      <input type="text" id="updateClientName" required />
+      <button type="button" onclick="updateClient()">Actualizar Cliente</button>
+    </form>
+
+    <!-- Eliminar Cliente -->
+    <form id="deleteClientForm">
+      <h2>Eliminar Cliente</h2>
+      <label for="deleteClientId">ID del Cliente:</label>
+      <input type="text" id="deleteClientId" required />
+      <button type="button" onclick="deleteClient()">Eliminar Cliente</button>
+    </form>
+
+    <!-- Crear Reservación -->
+    <form id="reservationForm">
+      <h2>Reservaciones</h2>
+      <label for="reservationClientId">ID del Cliente:</label>
+      <input type="text" id="reservationClientId" required />
+      <label for="reservationDate">Fecha de Reservación:</label>
+      <input
+        type="text"
+        id="reservationDate"
+        placeholder="YYYY-MM-DD"
+        required
+      />
+      <button type="button" onclick="createReservation()">
+        Crear Reservación
+      </button>
+    </form>
+
+    <table id="clientsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <table id="reservationsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>ID del Cliente</th>
+          <th>Fecha de Reservación</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script>
+      async function createClient() {
+        const name = document.getElementById("clientName").value;
+        const email = document.getElementById("clientEmail").value;
+        const phone = document.getElementById("clientPhone").value;
+
+        try {
+          const response = await fetch("http://localhost:3000/clients", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, email, phone }),
+          });
+
+          if (!response.ok) {
+            const errorResponse = await response.json();
+            throw new Error(
+              errorResponse.error || "Error desconocido en el servidor"
+            );
+          }
+
+          const client = await response.json();
+          alert(
+            `Cliente creado:\nID: ${client._id}\nNombre: ${client.name}\nEmail: ${client.email}\nTeléfono: ${client.phone}`
+          );
+
+          // Limpiar el formulario después de la creación exitosa
+          document.getElementById("clientForm").reset();
+
+          // Actualizar la tabla de clientes
+          fetchClients();
+        } catch (error) {
+          console.error("Error al crear el cliente:", error);
+          alert(
+            `Error al crear el cliente:\n${
+              error.message || "Consulta la consola para más detalles."
+            }`
+          );
+        }
+      }
+
+      async function fetchClients() {
+        try {
+          const response = await fetch("http://localhost:3000/clients");
+          const clients = await response.json();
+
+          const tableBody = document.querySelector("#clientsTable tbody");
+          tableBody.innerHTML = "";
+
+          clients.forEach((client) => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).textContent = client._id;
+            row.insertCell(1).textContent = client.name;
+            row.insertCell(2).textContent = client.email;
+            row.insertCell(3).textContent = client.phone;
+          });
+        } catch (error) {
+          console.error(
+            "Error al obtener la lista de clientes:",
+            error.message
+          );
+          alert(
+            "Error al obtener la lista de clientes. Consulta la consola para más detalles."
+          );
+        }
+      }
+      async function updateClient() {
+        const clientId = document.getElementById("updateClientId").value;
+        const newName = document.getElementById("updateClientName").value;
+
+        try {
+          const response = await fetch(
+            `http://localhost:3000/clients/${clientId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name: newName }),
+            }
+          );
+
+          if (!response.ok) {
+            const errorResponse = await response.json();
+            throw new Error(
+              errorResponse.error || "Error desconocido en el servidor"
+            );
+          }
+
+          const updatedClient = await response.json();
+          alert(
+            `Cliente actualizado:\nID: ${updatedClient._id}\nNuevo Nombre: ${updatedClient.name}`
+          );
+
+          // Limpiar el formulario después de la actualización exitosa
+          document.getElementById("updateClientForm").reset();
+
+          // Actualizar la tabla de clientes
+          fetchClients();
+        } catch (error) {
+          console.error("Error al actualizar el cliente:", error);
+          alert(
+            `Error al actualizar el cliente:\n${
+              error.message || "Consulta la consola para más detalles."
+            }`
+          );
+        }
+      }
+
+      async function deleteClient() {
+        const clientId = document.getElementById("deleteClientId").value;
+
+        try {
+          const response = await fetch(
+            `http://localhost:3000/clients/${clientId}`,
+            {
+              method: "DELETE",
+            }
+          );
+
+          if (!response.ok) {
+            const errorResponse = await response.json();
+            throw new Error(
+              errorResponse.error || "Error desconocido en el servidor"
+            );
+          }
+
+          alert("Cliente eliminado exitosamente");
+
+          // Limpiar el formulario después de la eliminación exitosa
+          document.getElementById("deleteClientForm").reset();
+
+          // Actualizar la tabla de clientes
+          fetchClients();
+        } catch (error) {
+          console.error("Error al eliminar el cliente:", error);
+          alert(
+            `Error al eliminar el cliente:\n${
+              error.message || "Consulta la consola para más detalles."
+            }`
+          );
+        }
+      }
+
+      async function createReservation() {
+        const clientId = document.getElementById("reservationClientId").value;
+        const reservationDate =
+          document.getElementById("reservationDate").value;
+
+        try {
+          const response = await fetch("http://localhost:3000/reservations", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ clientId, date: reservationDate }),
+          });
+
+          if (!response.ok) {
+            const errorResponse = await response.json();
+            throw new Error(
+              errorResponse.error || "Error desconocido en el servidor"
+            );
+          }
+
+          const reservation = await response.json();
+          alert(
+            `Reservación creada:\nID: ${reservation._id}\nID del Cliente: ${reservation.clientId}\nFecha de Reservación: ${reservation.date}`
+          );
+
+          // Limpiar el formulario después de la creación exitosa
+          document.getElementById("reservationForm").reset();
+
+          // Actualizar la tabla de reservaciones
+          fetchReservations();
+        } catch (error) {
+          console.error("Error al crear la reservación:", error);
+          alert(
+            `Error al crear la reservación:\n${
+              error.message || "Consulta la consola para más detalles."
+            }`
+          );
+        }
+      }
+
+      async function fetchReservations() {
+        try {
+          const response = await fetch("https://api-rest-full-omega.vercel.app/reservations");
+          const reservations = await response.json();
+
+          const tableBody = document.querySelector("#reservationsTable tbody");
+          tableBody.innerHTML = "";
+
+          reservations.forEach((reservation) => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).textContent = reservation._id;
+            row.insertCell(1).textContent = reservation.clientId;
+            row.insertCell(2).textContent = reservation.date;
+          });
+        } catch (error) {
+          console.error(
+            "Error al obtener la lista de reservaciones:",
+            error.message
+          );
+          alert(
+            "Error al obtener la lista de reservaciones. Consulta la consola para más detalles."
+          );
+        }
+      }
+
+      // Cargar la lista de clientes y reservaciones al cargar la página
+      fetchClients();
+      fetchReservations();
+    </script>
+  </body>
+</html>
