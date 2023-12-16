@@ -7,5 +7,8 @@ Práctica: Implementación de una API RESTFull como un servicio en la nube.
 3) Para iniciar el servidor: " Node app.js"
 4) Abra el navegador y escriba en una pestaña vacía: https://api-rest-full-omega.vercel.app/
 
+Dependencias 
+    - "version de node": "20.10.0"
+
 ## Authors
 - Ronaldo Pérez Díaz
